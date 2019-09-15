@@ -157,7 +157,10 @@ class QuerySequenceIterable(ComparatorMixin):
                 # If this is already empty, just skip it.
                 continue
             # Set the QuerySet number so that the comparison works properly.
-            setattr(value, '#', i)
+            if isinstance(value, dict):
+                value['#'] = i
+            else:
+                setattr(value, '#', i)
             iterables.append((it, i, value))
 
         # The offset of items returned.
@@ -202,7 +205,10 @@ class QuerySequenceIterable(ComparatorMixin):
             try:
                 value = next(it)
                 # Set the QuerySet number so that the comparison works properly.
-                setattr(value, '#', i)
+                if isinstance(value, dict):
+                    value['#'] = i
+                else:
+                    setattr(value, '#', i)
                 iterables[next_value_ind] = it, i, value
             except StopIteration:
                 # This iterator is done, remove it.
@@ -215,7 +221,10 @@ class QuerySequenceIterable(ComparatorMixin):
         """
         for i, qs in zip(self._queryset_idxs, self._querysets):
             for item in qs:
-                setattr(item, '#', i)
+                if isinstance(item, dict):
+                    item['#'] = i
+                else:
+                    setattr(item, '#', i)
                 yield item
 
     def __iter__(self):
