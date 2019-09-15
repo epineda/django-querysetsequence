@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from collections import defaultdict
 import functools
 from itertools import dropwhile
-from operator import __not__, attrgetter, eq, ge, gt, le, lt, mul
+from operator import __not__, attrgetter, itemgetter, eq, ge, gt, le, lt, mul
 
 import django
 from django.core.exceptions import (FieldError, MultipleObjectsReturned,
@@ -106,8 +106,14 @@ class ComparatorMixin(object):
 
         def comparator(i1, i2):
             # Get a tuple of values for comparison.
-            v1 = attrgetter(*field_names)(i1)
-            v2 = attrgetter(*field_names)(i2)
+            if isinstance(i1, dict):
+                v1 = itemgetter(*field_names)(i1)
+            else:
+                v1 = attrgetter(*field_names)(i1)
+            if isinstance(i2, dict):
+                v2 = itemgetter(*field_names)(i2)
+            else:
+                v2 = attrgetter(*field_names)(i2)
 
             # If there's only one arg supplied, attrgetter returns a single
             # item, directly return the result in this case.
